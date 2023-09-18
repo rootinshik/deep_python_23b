@@ -1,3 +1,6 @@
+import random
+
+
 class SomeModel:
     def predict(self, message: str) -> float:
-        pass
+        return random.uniform(0, 1)
