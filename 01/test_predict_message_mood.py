@@ -1,11 +1,11 @@
 import unittest
-from unittest.mock import patch
+from unittest import mock
 
 from predict_message_mood import predict_message_mood
 
 
 class TestPredictMessageMood(unittest.TestCase):
-    @patch('predict_message_mood.SomeModel', autospec=True)
+    @mock.patch('predict_message_mood.SomeModel', autospec=True)
     def test_normal_cond(self, mock_model):
         mock_model = mock_model.return_value
         mock_model.predict.side_effect = [0.2, 0.4, 0.9]
@@ -32,8 +32,24 @@ class TestPredictMessageMood(unittest.TestCase):
         self.assertEqual(result2, 'норм')
         self.assertEqual(result3, 'отл')
 
-    def test_edge_cond(self):
-        pass
+    @mock.patch('predict_message_mood.SomeModel', autospec=True)
+    def test_count_predict_calls(self, mock_model):
+        mock_model = mock_model.return_value
+        mock_model.predict.side_effect = [0.3, 0.4, 0.9]
+
+        message = 'Понедельник начинается в субботу'
+        predict_message_mood(message=message, model=mock_model)
+
+        expected_calls = [
+            mock.call.predict(message)
+        ]
+        self.assertEqual(mock_model.mock_calls, expected_calls)
+
+    @mock.patch('predict_message_mood.SomeModel', autospec=True)
+    def test_edge_cond(self, mock_model):
+        mock_model = mock_model.return_value
+        mock_model.predict.return_value = 0.2
+
 
     def test_thresholds_equals(self):
         pass
