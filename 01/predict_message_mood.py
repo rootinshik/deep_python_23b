@@ -7,10 +7,7 @@ class ThresholdsError(Exception):
                  good_thresholds: float,
                  message: str = "Bad threshold greater then good threshold"
                  ):
-        self.bad_thresholds = bad_thresholds
-        self.good_thresholds = good_thresholds
-        self.message = message
-        super().__init__(self.message + f': {self.bad_thresholds=}, {self.good_thresholds=}.')
+        super().__init__(message + f': {bad_thresholds=}, {good_thresholds=}')
 
 
 def predict_message_mood(
