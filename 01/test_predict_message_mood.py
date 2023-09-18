@@ -91,11 +91,11 @@ class TestPredictMessageMood(unittest.TestCase):
         good_thresholds = 0.3
 
         result = predict_message_mood(
-                    message="Пикник на обочине",
-                    model=mock_model,
-                    bad_thresholds=bad_thresholds,
-                    good_thresholds=good_thresholds,
-            )
+            message="Пикник на обочине",
+            model=mock_model,
+            bad_thresholds=bad_thresholds,
+            good_thresholds=good_thresholds,
+        )
 
         self.assertEqual(result, "норм")
 
