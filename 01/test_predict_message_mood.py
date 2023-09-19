@@ -2,6 +2,7 @@ import unittest
 from unittest import mock
 
 from predict_message_mood import predict_message_mood, ThresholdsError
+from model import SomeModel
 
 
 class TestPredictMessageMood(unittest.TestCase):
@@ -110,6 +111,66 @@ class TestPredictMessageMood(unittest.TestCase):
         with self.assertRaises(ThresholdsError):
             predict_message_mood(
                 message="Пикник на обочине",
+                model=mock_model,
+                bad_thresholds=bad_thresholds,
+                good_thresholds=good_thresholds,
+            )
+
+    def test_model_not_some_model(self):
+        bad_thresholds = 0.8
+        good_thresholds = 0.3
+
+        with self.assertRaises(TypeError):
+            predict_message_mood(
+                message="Вишневый сад",
+                model=42,
+                bad_thresholds=bad_thresholds,
+                good_thresholds=good_thresholds,
+            )
+
+    @mock.patch("predict_message_mood.SomeModel", autospec=True)
+    def test_message_not_str(self, mock_model):
+        mock_model = mock_model.return_value
+        mock_model.predict.return_value = 0.3
+
+        bad_thresholds = 0.8
+        good_thresholds = 0.3
+
+        with self.assertRaises(TypeError):
+            predict_message_mood(
+                message=42,
+                model=mock_model,
+                bad_thresholds=bad_thresholds,
+                good_thresholds=good_thresholds,
+            )
+
+    @mock.patch("predict_message_mood.SomeModel", autospec=True)
+    def test_bad_thresholds_not_int(self, mock_model):
+        mock_model = mock_model.return_value
+        mock_model.predict.return_value = 0.3
+
+        bad_thresholds = "Хорошо, что сундуки остались наверху"
+        good_thresholds = 0.8
+
+        with self.assertRaises(TypeError):
+            predict_message_mood(
+                message="Палата №6",
+                model=mock_model,
+                bad_thresholds=bad_thresholds,
+                good_thresholds=good_thresholds,
+            )
+
+    @mock.patch("predict_message_mood.SomeModel", autospec=True)
+    def test_good_thresholds_not_int(self, mock_model):
+        mock_model = mock_model.return_value
+        mock_model.predict.return_value = 0.3
+
+        bad_thresholds = 0.3
+        good_thresholds = "Ой мама пришла"
+
+        with self.assertRaises(TypeError):
+            predict_message_mood(
+                message="",
                 model=mock_model,
                 bad_thresholds=bad_thresholds,
                 good_thresholds=good_thresholds,
