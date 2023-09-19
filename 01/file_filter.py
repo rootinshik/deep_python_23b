@@ -25,17 +25,3 @@ class FileFilter:
         for word in map(lambda str_: str_.lower(), words_to_find):
             if word in search_string.lower():
                 return True
-
-
-if __name__ == "__main__":
-    search_string1 = "а Роза упала на лапу Азора"
-    words_to_find1 = ["роза"]
-
-    assert FileFilter.words_in_string(search_string1, words_to_find1)
-    assert FileFilter.find_in_file("test_input_for_generator.txt", words_to_find1) == [
-        search_string1
-    ]
-    with open("test_input_for_generator.txt", "r") as test_input:
-        assert FileFilter.find_in_file_obj(test_input, words_to_find1) == [
-            search_string1
-        ]
