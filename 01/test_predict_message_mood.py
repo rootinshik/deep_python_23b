@@ -99,8 +99,8 @@ class TestPredictMessageMood(unittest.TestCase):
         self.assertEqual(result, "норм")
 
     @mock.patch("predict_message_mood.SomeModel.predict")
-    def test_swap_thresholds(self, mock_model):
-        mock_model.predict.return_value = 0.3
+    def test_swap_thresholds(self, mock_predict):
+        mock_predict.return_value = 0.3
 
         bad_thresholds = 0.8
         good_thresholds = 0.3
@@ -127,7 +127,7 @@ class TestPredictMessageMood(unittest.TestCase):
 
     @mock.patch("predict_message_mood.SomeModel.predict")
     def test_message_not_str(self, mock_predict):
-        mock_predict.predict.return_value = 0.3
+        mock_predict.return_value = 0.3
 
         bad_thresholds = 0.8
         good_thresholds = 0.3
@@ -142,7 +142,7 @@ class TestPredictMessageMood(unittest.TestCase):
 
     @mock.patch("predict_message_mood.SomeModel.predict")
     def test_bad_thresholds_not_int(self, mock_predict):
-        mock_predict.predict.return_value = 0.3
+        mock_predict.return_value = 0.3
 
         bad_thresholds = "Хорошо, что сундуки остались наверху"
         good_thresholds = 0.8
@@ -157,7 +157,7 @@ class TestPredictMessageMood(unittest.TestCase):
 
     @mock.patch("predict_message_mood.SomeModel.predict")
     def test_good_thresholds_not_int(self, mock_predict):
-        mock_predict.predict.return_value = 0.3
+        mock_predict.return_value = 0.3
 
         bad_thresholds = 0.3
         good_thresholds = "Ой мама пришла"
