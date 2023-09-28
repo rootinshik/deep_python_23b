@@ -25,3 +25,4 @@ class FileFilter:
         for word in map(lambda str_: str_.lower(), words_to_find):
             if word in search_string.lower():
                 return True
+        return False
