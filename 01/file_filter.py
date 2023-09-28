@@ -5,7 +5,7 @@ class FileFilter:
     @staticmethod
     def file_to_string_generator(file: TextIO) -> str:
         for line in file:
-            yield line
+            yield line.strip()
 
     @staticmethod
     def find_in_file_obj(file: TextIO, word_list: list[str]) -> list[str]:
@@ -23,6 +23,6 @@ class FileFilter:
     @staticmethod
     def words_in_string(search_string: str, words_to_find: list[str]) -> bool:
         for word in map(lambda str_: str_.lower(), words_to_find):
-            if word in search_string.lower():
+            if word in search_string.lower().split():
                 return True
         return False
