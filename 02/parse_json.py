@@ -6,7 +6,7 @@ def example_callback(key: str, value: str) -> None:
 
 
 def parse_json(
-    json_str: str,
+    json_str: str = None,
     required_fields: list[str] = None,
     keywords: list[str] = None,
     keyword_callback: callable = None,
