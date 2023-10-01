@@ -28,5 +28,5 @@ if __name__ == "__main__":
         json_str='{"key1": "Word1 word2", "key2": "word2 word3"}',
         required_fields=["key1"],
         keywords=["word2"],
-        keyword_callback=print,
+        keyword_callback=example_callback,
     )
