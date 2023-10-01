@@ -11,6 +11,7 @@ def parse_json(
     keywords: list[str] = None,
     keyword_callback: callable = None,
 ) -> None:
+
     json_doc = json.loads(json_str)
     required_doc = {
         required_fields[i]:
