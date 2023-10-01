@@ -19,10 +19,25 @@ def mean(k_calls: int = 0) -> callable:
             num_calls += 1
 
             mean_exec = sum(calls_times) / min(num_calls, k_calls)
-            print(f"Mean execution time = {mean_exec}")
+            print(
+                f"Mean execution time = {mean_exec} "
+                f"of last {min(num_calls, k_calls)} calls"
+            )
 
             return res
 
         return inner
 
     return inner_mean
+
+
+if __name__ == "__main__":
+
+    @mean(2)
+    def foo(sleep_time):
+        time.sleep(sleep_time)
+
+    for time_to_sleep in map(lambda x: x / 10, range(1, 6)):
+        print(f"{time_to_sleep=}")
+        foo(time_to_sleep)
+        print()
