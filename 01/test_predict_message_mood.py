@@ -51,36 +51,34 @@ class TestPredictMessageMood(unittest.TestCase):
         mock_predict.assert_called_once_with(message)
 
     @mock.patch("predict_message_mood.SomeModel.predict")
-    def test_edge_cond(self, mock_predict):
-        mock_predict.side_effect = [0, 0.3, 0.8]
-
+    def test_edge_near_edge_cond(self, mock_predict):
         bad_thresholds = 0.3
         good_thresholds = 0.8
+        expected = {
+            0: "неуд",
+            0.29: "неуд",
+            0.3: "норм",
+            0.31: "норм",
+            0.79: "норм",
+            0.8: "норм",
+            0.81: "отл",
+            1: "отл",
+        }
 
-        result1 = predict_message_mood(
-            message="Надзирать и наказывать",
-            model=self.model,
-            bad_thresholds=bad_thresholds,
-            good_thresholds=good_thresholds,
-        )
+        mock_predict.side_effect = expected.keys()
 
-        result2 = predict_message_mood(
-            message="Над пропастью во ржи",
-            model=self.model,
-            bad_thresholds=bad_thresholds,
-            good_thresholds=good_thresholds,
-        )
+        results = [
+            predict_message_mood(
+                message="Надзирать и наказывать",
+                model=self.model,
+                bad_thresholds=bad_thresholds,
+                good_thresholds=good_thresholds,
+            )
+            for _ in range(len(expected))
+        ]
 
-        result3 = predict_message_mood(
-            message="Тихий Дон",
-            model=self.model,
-            bad_thresholds=bad_thresholds,
-            good_thresholds=good_thresholds,
-        )
-
-        self.assertEqual(result1, "неуд")
-        self.assertEqual(result2, "норм")
-        self.assertEqual(result3, "норм")
+        for exp, res in zip(expected.values(), results):
+            self.assertEqual(exp, res)
 
     @mock.patch("predict_message_mood.SomeModel.predict")
     def test_thresholds_equals(self, mock_predict):
