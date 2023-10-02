@@ -2,7 +2,7 @@ from typing import Union, TextIO, Generator
 
 
 def find_in_file(
-    file_input: Union[str, TextIO],
+    file: Union[str, TextIO],
     words_to_find: list[str],
     encoding: str = "UTF-8"
 ) -> Generator[str, TypeError]:
@@ -12,17 +12,17 @@ def find_in_file(
                 return True
         return False
 
-    if not isinstance(file_input, str) and not isinstance(file_input, TextIO):
+    if not isinstance(file, str) and not isinstance(file, TextIO):
         return TypeError("file_input must be str or TextIO")
 
     is_opened = False
-    if isinstance(file_input, str):
-        file_input = open(file_input, encoding=encoding, mode="r")
+    if isinstance(file, str):
+        file = open(file, encoding=encoding, mode="r")
         is_opened = True
 
-    for line in file_input:
+    for line in file:
         if words_in_string(line, words_to_find):
             yield line
 
     if is_opened:
-        file_input.close()
+        file.close()
