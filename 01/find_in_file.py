@@ -2,9 +2,7 @@ from typing import Union, TextIO, Generator
 
 
 def find_in_file(
-    file: Union[str, TextIO],
-    words_to_find: list[str],
-    encoding: str = "UTF-8"
+    file: Union[str, TextIO], words_to_find: list[str], encoding: str = "UTF-8"
 ) -> Generator[str, TypeError]:
     def words_in_string(search_line: str, words: list[str]) -> bool:
         for word in map(lambda str_: str_.lower(), words):
