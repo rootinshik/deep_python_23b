@@ -42,8 +42,10 @@ class TestFileFilter(unittest.TestCase):
         words_to_find = ["А", "роза", "УПАЛА", "аврора"]
         result = list(find_in_file(file="/dev/null",
                                    words_to_find=words_to_find))
-        self.assertEqual(result, ["а Роза упала на лапу Азора",
-                                  "В порыве любви прошептала Аврора"])
+        self.assertEqual(
+            result, ["а Роза упала на лапу Азора",
+                     "В порыве любви прошептала Аврора"]
+        )
 
     @mock.patch(
         "find_in_file.open",
@@ -89,8 +91,10 @@ class TestFileFilter(unittest.TestCase):
         words_to_find = ["РОЗА", "в"]
         result = list(find_in_file(file="/dev/null",
                                    words_to_find=words_to_find))
-        self.assertEqual(result, ["а Роза упала на лапу Азора",
-                                  "В порыве любви прошептала Аврора"])
+        self.assertEqual(
+            result, ["а Роза упала на лапу Азора",
+                     "В порыве любви прошептала Аврора"]
+        )
 
     @mock.patch(
         "find_in_file.open",
@@ -135,9 +139,13 @@ class TestFileFilter(unittest.TestCase):
 
     def test_not_file_as_input(self):
         words_to_find = ["роза"]
-        gen = find_in_file(file=42,
-                           words_to_find=words_to_find)
+        gen = find_in_file(file=42, words_to_find=words_to_find)
         with self.assertRaises(AttributeError):
             next(gen)
 
-    # Тест для генератора
+    def test_read_from_text_io(self):
+        with open("test.txt", "r", encoding="UTF-8") as file:
+            words_to_find = ["а"]
+            result = list(find_in_file(file=file,
+                                       words_to_find=words_to_find))
+            self.assertEqual(result, ["а Роза упала на лапу Азора"])
