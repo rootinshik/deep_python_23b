@@ -1,9 +1,9 @@
-from typing import Union, Generator
+from typing import Union, Generator, TextIO
 from io import IOBase
 
 
 def find_in_file(
-    file: Union[str, IOBase], words_to_find: list[str], encoding: str = "UTF-8"
+    file: Union[str, TextIO], words_to_find: list[str], encoding: str = "UTF-8"
 ) -> Generator[str, None, None]:
     def words_in_line(search_line: bytes, words: list[str]) -> bool:
         for word in map(lambda str_: str_.lower(), words):
