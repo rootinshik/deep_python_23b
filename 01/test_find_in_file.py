@@ -152,3 +152,7 @@ class TestFileFilter(unittest.TestCase):
         gen = find_in_file(input_, words_to_find)
         result = next(gen)
         self.assertEqual(result, "а Роза упала на лапу Азора")
+
+
+if __name__ == "__main__":
+    unittest.main()
