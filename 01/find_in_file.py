@@ -14,7 +14,7 @@ def find_in_file(
     def base_generator(
         file_: str | IOBase | TextIO,
         words_to_find_: list[str],
-    ) -> Generator[str]:
+    ) -> Generator[str, None, None]:
         for line in file_:
             if words_in_line(line, words_to_find_):
                 yield line.strip()
