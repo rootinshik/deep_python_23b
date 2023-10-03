@@ -1,4 +1,4 @@
-from typing import Union, Generator, TextIO
+from typing import Union, Generator
 from io import IOBase
 
 
@@ -11,10 +11,7 @@ def find_in_file(
                 return True
         return False
 
-    def base_generator(
-        file_: str | IOBase | TextIO,
-        words_to_find_: list[str],
-    ) -> Generator[str, None, None]:
+    def base_generator(file_, words_to_find_):
         for line in file_:
             if words_in_line(line, words_to_find_):
                 yield line.strip()
