@@ -22,7 +22,7 @@ def find_in_file(
                 yield line.strip()
 
     if not isinstance(file, (str, IOBase)):
-        raise AttributeError("file_input must be str or TextIO")
+        raise AttributeError("file_input must be str or IOBase")
 
     if isinstance(file, str):
         with open(file, encoding=encoding, mode="r") as file_obj:

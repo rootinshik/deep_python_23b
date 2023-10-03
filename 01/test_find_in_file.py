@@ -1,4 +1,5 @@
 import unittest
+from io import StringIO
 from unittest import mock
 
 from find_in_file import find_in_file
@@ -99,15 +100,15 @@ class TestFileFilter(unittest.TestCase):
     @mock.patch(
         "find_in_file.open",
         mock.mock_open(
-            read_data="а Роза упала на лапу Азора \n"
-                      "В порыве любви прошептала Аврора"
+            read_data="Роза\n"
+                      "В"
         ),
     )
     def test_word_equal_file(self):
-        words_to_find = ["а Роза упала на лапу Азора"]
+        words_to_find = ["роза"]
         result = list(find_in_file(file="/dev/null",
                                    words_to_find=words_to_find))
-        self.assertEqual(result, [])
+        self.assertEqual(result, ["Роза"])
 
     @mock.patch(
         "find_in_file.open",
@@ -143,9 +144,11 @@ class TestFileFilter(unittest.TestCase):
         with self.assertRaises(AttributeError):
             next(gen)
 
-    def test_read_from_text_io(self):
-        with open("test.txt", "r", encoding="UTF-8") as file:
-            words_to_find = ["а"]
-            result = list(find_in_file(file=file,
-                                       words_to_find=words_to_find))
-            self.assertEqual(result, ["а Роза упала на лапу Азора"])
+    def test_read_from_string_io(self):
+        data = "а Роза упала на лапу Азора \n" \
+               "В порыве любви прошептала Аврора"
+        words_to_find = ["а"]
+        input_ = StringIO(data)
+        gen = find_in_file(input_, words_to_find)
+        result = next(gen)
+        self.assertEqual(result, "а Роза упала на лапу Азора")
