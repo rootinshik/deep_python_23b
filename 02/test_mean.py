@@ -6,7 +6,7 @@ from mean import mean
 
 class TestMeanDecorator(unittest.TestCase):
     def setUp(self) -> None:
-        self.eps_ = 1e-3
+        self._eps = 1e-3
 
     @staticmethod
     def find_calls_time_in_string(string: str) -> (int, float):
