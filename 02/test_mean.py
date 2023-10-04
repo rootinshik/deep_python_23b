@@ -46,14 +46,14 @@ class TestMeanDecorator(unittest.TestCase):
         )
         expected_calls, expected_mean = 5, 0.1
         self.assertEqual(num_calls, expected_calls)
-        self.assertAlmostEqual(mean_time, expected_mean, delta=self.eps_)
+        self.assertAlmostEqual(mean_time, expected_mean, delta=self._eps)
 
         num_calls, mean_time = TestMeanDecorator.find_calls_time_in_string(
             print_args[0]
         )
         expected_calls, expected_mean = 1, 0.1
         self.assertEqual(num_calls, expected_calls)
-        self.assertAlmostEqual(mean_time, expected_mean, delta=self.eps_)
+        self.assertAlmostEqual(mean_time, expected_mean, delta=self._eps)
 
     def test_call_times_le_call_to_mean(self):
         print_args = []
@@ -73,7 +73,7 @@ class TestMeanDecorator(unittest.TestCase):
         )
         expected_calls, expected_mean = 3, 0.1
         self.assertEqual(num_calls, expected_calls)
-        self.assertAlmostEqual(mean_time, expected_mean, delta=self.eps_)
+        self.assertAlmostEqual(mean_time, expected_mean, delta=self._eps)
 
     def test_call_times_ge_call_to_mean(self):
         print_args = []
@@ -93,7 +93,7 @@ class TestMeanDecorator(unittest.TestCase):
         )
         expected_calls, expected_mean = 3, 0.1
         self.assertEqual(num_calls, expected_calls)
-        self.assertAlmostEqual(mean_time, expected_mean, delta=self.eps_)
+        self.assertAlmostEqual(mean_time, expected_mean, delta=self._eps)
 
     def test_time_not_const(self):
         print_args = []
@@ -113,7 +113,19 @@ class TestMeanDecorator(unittest.TestCase):
         )
         expected_calls, expected_mean = 3, 0.4
         self.assertEqual(num_calls, expected_calls)
-        self.assertAlmostEqual(mean_time, expected_mean, delta=self.eps_)
+        self.assertAlmostEqual(mean_time, expected_mean, delta=self._eps)
+
+    def test_func_result(self):
+        with patch("builtins.print"):
+            @mean(2)
+            def some_function(a, b=10):
+                return a + b
+
+            self.assertEqual(some_function(1, 2), 3)
+            self.assertEqual(some_function(1), 11)
+            self.assertEqual(some_function(b=1, a=2), 3)
+            with self.assertRaises(TypeError):
+                some_function()
 
 
 if __name__ == "__main__":
