@@ -1,9 +1,42 @@
+from math import isclose
+
+
 class CustomList(list):
-    ...
 
+    def complement(self, num_of_comp):
+        if num_of_comp <= 0:
+            return self
+        return CustomList(list.__add__(self, [0] * num_of_comp))
 
-if __name__ == '__main__':
-    cl1 = CustomList([5, 1, 3, 7])
-    cl2 = CustomList([1, 2, 7])
-    cl3 = CustomList([6, 3, 10, 7])
-    assert cl1 + cl2 == cl3
+    def __add__(self, other):
+        other = CustomList(other)
+        other = other.complement(len(self) - len(other))
+        new = self.complement(len(other) - len(self))
+        return CustomList(map(lambda x, y: x + y, new, other))
+
+    def __neg__(self):
+        return CustomList(map(lambda x: -x, self))
+
+    def __sub__(self, other):
+        return self + -CustomList(other)
+
+    def __eq__(self, other):
+        return isclose(sum(self), sum(other))
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __gt__(self, other):
+        return self != other and sum(self) > sum(other)
+
+    def __lt__(self, other):
+        return self != other and sum(self) < sum(other)
+
+    def __ge__(self, other):
+        return not self < other
+
+    def __le__(self, other):
+        return not self > other
+
+    def __str__(self):
+        return f"sum = {sum(self)}, elements = {list.__str__(self)}"
