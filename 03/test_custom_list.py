@@ -4,7 +4,6 @@ from custom_list import CustomList
 
 
 class TestCustomList(unittest.TestCase):
-
     def test_addition(self):
         lst1 = CustomList([5, 1, 3, 7])
         lst2 = CustomList([1, 2, 7])
@@ -146,5 +145,5 @@ class TestCustomList(unittest.TestCase):
         self.assertEqual(str(lst1), "sum = 16, elements = [5, 1, 3, 7]")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

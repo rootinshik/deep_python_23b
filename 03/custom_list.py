@@ -2,11 +2,10 @@ from math import isclose
 
 
 class CustomList(list):
-
     def complement(self, num_of_comp):
         if num_of_comp <= 0:
             return self
-        return CustomList(list.__add__(self, [0] * num_of_comp))
+        return CustomList(super().__add__([0] * num_of_comp))
 
     def __add__(self, other):
         other = CustomList(other)
@@ -45,4 +44,4 @@ class CustomList(list):
         return not self > other
 
     def __str__(self):
-        return f"sum = {sum(self)}, elements = {list.__str__(self)}"
+        return f"sum = {sum(self)}, elements = {super().__str__()}"
