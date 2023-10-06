@@ -14,11 +14,17 @@ class CustomList(list):
         new = self.complement(len(other) - len(self))
         return CustomList(map(lambda x, y: x + y, new, other))
 
+    def __radd__(self, other):
+        return self + other
+
     def __neg__(self):
         return CustomList(map(lambda x: -x, self))
 
     def __sub__(self, other):
         return self + -CustomList(other)
+
+    def __rsub__(self, other):
+        return -self + other
 
     def __eq__(self, other):
         return isclose(sum(self), sum(other))
