@@ -12,6 +12,13 @@ def parse_json(
     keyword_callback: callable = None,
 ) -> None:
 
+    if required_fields is None:
+        raise AttributeError("required_fields is None")
+    if keywords is None:
+        raise AttributeError("keywords is None")
+    if keyword_callback is None:
+        raise AttributeError("keyword_callback is None")
+
     json_doc = json.loads(json_str)
 
     for key, values in json_doc.items():
