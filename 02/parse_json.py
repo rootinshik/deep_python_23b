@@ -24,5 +24,5 @@ def parse_json(
     for key, values in json_doc.items():
         if key in required_fields:
             for value in values.split():
-                if value in keywords:
+                if value.lower() in map(lambda x: x.lower(), keywords):
                     keyword_callback(key, value)
