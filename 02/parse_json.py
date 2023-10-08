@@ -13,12 +13,9 @@ def parse_json(
 ) -> None:
 
     json_doc = json.loads(json_str)
-    required_doc = {
-        required_fields[i]: keywords.copy() for i in range(len(required_fields))
-    }
 
     for key, values in json_doc.items():
-        if key in required_doc.keys():
+        if key in required_fields:
             for value in values.split():
-                if value in required_doc[key]:
+                if value in keywords:
                     keyword_callback(key, value)
