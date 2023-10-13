@@ -27,4 +27,3 @@ class CustomMeta(type):
 
         cls = super().__new__(mcs, name, bases, new_classdict, **kwargs)
         return cls
-
