@@ -29,7 +29,7 @@ class CustomMeta(type):
     def __new__(mcs, name, bases, class_dict, **kwargs):
         custom_class_dict = CustomMeta.make_custom_class_dict(class_dict, name)
         cls = super().__new__(mcs, name, bases, custom_class_dict, **kwargs)
-        if len(bases) == 0:
+        if len(bases) == 0 or "__setattr__" in class_dict:
             setattr(
                 cls,
                 "__setattr__",

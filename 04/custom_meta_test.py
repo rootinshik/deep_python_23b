@@ -19,6 +19,7 @@ class TestCustomMeta(unittest.TestCase):
         self.assertEqual(CustomClass._custom_y, 2)
 
         self.assertFalse(hasattr(CustomClass, "_CustomClass__z"))
+        self.assertFalse(hasattr(CustomClass, "custom_CustomClass__z"))
         self.assertTrue(hasattr(CustomClass, "_CustomClass__custom_z"))
         self.assertEqual(CustomClass._CustomClass__custom_z, 3)
 
@@ -50,10 +51,22 @@ class TestCustomMeta(unittest.TestCase):
         self.assertEqual(inst.custom_line(), 100)
 
         self.assertFalse(hasattr(inst, "__custom__str__"))
+        self.assertFalse(hasattr(inst, "custom___str__"))
         self.assertTrue(hasattr(inst, "__str__"))
         self.assertEqual(str(inst), "Custom_by_metaclass")
 
-    def test_dynamic_add_attr(self):
+    def test_dynamic_add_attr_inst(self):
+        class CustomClass(metaclass=CustomMeta):
+            ...
+
+        inst = CustomClass()
+        inst.val = 42
+
+        self.assertFalse(hasattr(inst, "val"))
+        self.assertTrue(hasattr(inst, "custom_val"))
+        self.assertEqual(inst.custom_val, 42)
+
+    def test_init_attr(self):
         class CustomClass(metaclass=CustomMeta):
             x = 50
 
@@ -66,12 +79,11 @@ class TestCustomMeta(unittest.TestCase):
             def __str__(self):
                 return "Custom_by_metaclass"
 
-        inst = CustomClass()
-        inst.dynamic = "added later"
+        inst = CustomClass(42)
 
-        self.assertFalse(hasattr(inst, "dynamic"))
-        self.assertTrue(hasattr(inst, "custom_dynamic"))
-        self.assertEqual(inst.custom_dynamic, "added later")
+        self.assertFalse(hasattr(inst, "val"))
+        self.assertTrue(hasattr(inst, "custom_val"))
+        self.assertEqual(inst.custom_val, 42)
 
     def test_setattr_in_inst_class(self):
         class CustomClass(metaclass=CustomMeta):
@@ -89,13 +101,12 @@ class TestCustomMeta(unittest.TestCase):
             def __setattr__(self, key, value):
                 super().__setattr__(key, 10)
 
-        inst = CustomClass()
-        inst.value = 15
+        inst = CustomClass(15)
 
-        self.assertFalse(hasattr(inst, "value"))
-        self.assertTrue(hasattr(inst, "custom_value"))
-        self.assertNotEqual(inst.custom_value, 15)
-        self.assertEqual(inst.custom_value, 10)
+        self.assertFalse(hasattr(inst, "val"))
+        self.assertTrue(hasattr(inst, "custom_val"))
+        self.assertNotEqual(inst.custom_val, 99)
+        self.assertEqual(inst.custom_val, 10)
 
     def test_setattr_in_parent_class(self):
         class CustomClassParent(metaclass=CustomMeta):
