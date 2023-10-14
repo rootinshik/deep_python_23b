@@ -1,29 +1,38 @@
 class CustomMeta(type):
-    def __new__(mcs, name, bases, classdict, **kwargs):
-        def edit_custom_setattr(self, key, value):
-            classdict["__setattr__"](self, "custom_" + key, value)
+    @staticmethod
+    def make_custom_class_dict(class_dict, class_name):
+        new_class_dict = {}
 
-        def new_custom_setattr(self, key, value):
-            self.__dict__["custom_" + key] = value
-
-        new_classdict = {}
-        for key, value in classdict.items():
+        for key, value in class_dict.items():
             if key[-2:] == "__" and key[:2] == "__":
-                new_classdict[key] = value
+                new_class_dict[key] = value
+
             elif key[0] == "_":
                 parts = key.split("__")
-                if len(parts) == 2 and parts[0][1:] == name:
+                if len(parts) == 2 and parts[0][1:] == class_name:
                     new_key = parts[0] + "__custom_" + parts[1]
                 else:
                     new_key = "_custom_" + key[1:]
-                new_classdict[new_key] = value
+                new_class_dict[new_key] = value
+
             else:
-                new_classdict["custom_" + key] = value
+                new_class_dict["custom_" + key] = value
+        return new_class_dict
 
-        if "__setattr__" in classdict:
-            new_classdict["__setattr__"] = edit_custom_setattr
-        else:
-            new_classdict["__setattr__"] = new_custom_setattr
+    @staticmethod
+    def create_custom_setattr(default_setattr):
+        def custom_setattr(self, key, value):
+            default_setattr(self, "custom_" + key, value)
 
-        cls = super().__new__(mcs, name, bases, new_classdict, **kwargs)
+        return custom_setattr
+
+    def __new__(mcs, name, bases, class_dict, **kwargs):
+        custom_class_dict = CustomMeta.make_custom_class_dict(class_dict, name)
+        cls = super().__new__(mcs, name, bases, custom_class_dict, **kwargs)
+        if len(bases) == 0:
+            setattr(
+                cls,
+                "__setattr__",
+                CustomMeta.create_custom_setattr(cls.__setattr__)
+            )
         return cls
