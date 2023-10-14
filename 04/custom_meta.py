@@ -26,13 +26,20 @@ class CustomMeta(type):
 
         return custom_setattr
 
-    def __new__(mcs, name, bases, class_dict, **kwargs):
-        custom_class_dict = CustomMeta.make_custom_class_dict(class_dict, name)
-        cls = super().__new__(mcs, name, bases, custom_class_dict, **kwargs)
+    def __new__(mcs, class_name, bases, class_dict, **kwargs):
+        cls = super().__new__(
+            mcs,
+            class_name,
+            bases,
+            CustomMeta.make_custom_class_dict(class_dict, class_name),
+            **kwargs,
+        )
+
         if len(bases) == 0 or "__setattr__" in class_dict:
             setattr(
                 cls,
                 "__setattr__",
                 CustomMeta.create_custom_setattr(cls.__setattr__)
             )
+
         return cls
