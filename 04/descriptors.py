@@ -35,6 +35,9 @@ class LatexInLineMathEquation:
         if obj is None:
             return None
 
+        if not isinstance(val, str):
+            raise ValueError("Value must be str")
+
         if len(val) <= 2 or val[0] != "$" \
                 or val[-1] != "$" \
                 or val.count("$") > 2:
@@ -51,7 +54,7 @@ class LatexInLineMathEquation:
         for symb in string:
             if symb in brackets:
                 brackets_queue.append(brackets[symb])
-            elif symb in brackets_queue:
+            elif len(brackets_queue) != 0 and symb in brackets_queue[-1]:
                 brackets_queue.pop()
         return len(brackets_queue) == 0
 

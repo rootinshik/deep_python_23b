@@ -62,6 +62,14 @@ class TestLatexInLineMathEquationDescriptor(unittest.TestCase):
         obj.latex = "$a + b$"
         self.assertEqual(obj.latex, "$a + b$")
 
+    def test_latex_descriptor_invalid_type(self):
+        class SomeClass:
+            latex = LatexInLineMathEquation()
+
+        obj = SomeClass()
+        with self.assertRaises(ValueError):
+            obj.latex = 12
+
     def test_latex_descriptor_invalid_format(self):
         class SomeClass:
             latex = LatexInLineMathEquation()
