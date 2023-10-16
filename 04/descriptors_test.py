@@ -52,6 +52,16 @@ class TestProbabilityDescriptor(unittest.TestCase):
 
         self.assertEqual(SomeClass.probability, None)
 
+    def test_invalid_value_not_changing_value(self):
+        class SomeClass:
+            probability = Probability()
+
+        obj = SomeClass()
+        obj.probability = 0.1
+        with self.assertRaises(ValueError):
+            obj.probability = 1.2
+        self.assertEqual(obj.probability, 0.1)
+
 
 class TestLatexInLineMathEquationDescriptor(unittest.TestCase):
     def test_latex_descriptor_valid(self):
@@ -101,6 +111,16 @@ class TestLatexInLineMathEquationDescriptor(unittest.TestCase):
             latex = LatexInLineMathEquation()
 
         self.assertEqual(MyClass.latex, None)
+
+    def test_invalid_value_not_changing_value(self):
+        class MyClass:
+            latex = LatexInLineMathEquation()
+
+        obj = MyClass()
+        obj.latex = "$1$"
+        with self.assertRaises(ValueError):
+            obj.latex = "$$"
+        self.assertEqual(obj.latex, "$1$")
 
 
 class TestFootballMatchScoreDescriptor(unittest.TestCase):
@@ -169,6 +189,16 @@ class TestFootballMatchScoreDescriptor(unittest.TestCase):
             score = FootballMatchScore()
 
         self.assertEqual(MyClass.score, None)
+
+    def test_invalid_value_not_changing_value(self):
+        class MyClass:
+            score = FootballMatchScore()
+
+        obj = MyClass()
+        obj.score = [1, 2]
+        with self.assertRaises(ValueError):
+            obj.score = 0
+        self.assertEqual(obj.score, [1, 2])
 
 
 if __name__ == "__main__":
