@@ -97,7 +97,9 @@ class Worker(threading.Thread):
             .lower()
             .split()
         )
-        words = filter(lambda word: all(symb in ascii_lowercase for symb in word), data)
+        words = filter(
+            lambda word: all(symb in ascii_lowercase for symb in word),
+            data)
         word_count = dict(Counter(words).most_common(top_k))
         return json.dumps(word_count, ensure_ascii=False)
 
