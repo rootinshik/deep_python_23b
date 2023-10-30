@@ -1,3 +1,4 @@
+import queue
 import threading
 import socket
 import sys
@@ -6,14 +7,14 @@ from queue import Queue
 
 
 HOST = "127.0.0.1"
-PORT = 65425
+PORT = 65410
 
 
 class Client:
     def __init__(self, num_workers: int, file_name: str):
         self.num_workers = num_workers
         self.file_name = file_name
-        self.urls_queue = Queue(maxsize=10_000)
+        self.urls_queue = Queue()
         self.file_worker = FileWorker(self.file_name, self.urls_queue)
         self.url_workers = [URLWorker(self.urls_queue)
                             for _ in range(self.num_workers)]
@@ -47,7 +48,10 @@ class URLWorker(threading.Thread):
 
     def run(self):
         while True:
-            url = self.urls_queue.get()
+            try:
+                url = self.urls_queue.get(timeout=2)
+            except queue.Empty:
+                break
 
             if url is None:
                 self.urls_queue.put(None)
