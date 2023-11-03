@@ -3,7 +3,6 @@ import threading
 import argparse
 import socket
 import json
-
 from string import ascii_lowercase
 from queue import Queue
 from collections import Counter
@@ -21,19 +20,21 @@ class Server:
         self.num_workers = num_workers
         self.k_freq_words = k_freq_words
         self.num_processed_urls = 0
-        self.clients_queue = Queue(maxsize=10_000)
+        self.clients_queue = Queue()
         self.workers = [
             Worker(self.clients_queue, self.k_freq_words, self)
             for _ in range(self.num_workers)
         ]
         self.master = Master(self.clients_queue, self)
+        self.working = False
 
-    def start(self):
-
+    def start(self) -> None:
         print(
             f"Starting server with {self.num_workers} "
             f"workers and {self.k_freq_words} top frequency words."
         )
+
+        self.working = True
 
         for worker in self.workers:
             worker.start()
@@ -42,6 +43,9 @@ class Server:
         self.master.join()
         for worker in self.workers:
             worker.join()
+
+    def stop(self) -> None:
+        self.working = False
 
     def __repr__(self):
         return f"Number of processed URLs: {self.num_processed_urls}"
@@ -54,18 +58,18 @@ class Master(threading.Thread):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.clients_queue = clients_queue
         self.server = server
-        self.socket.settimeout(5)
+        self.socket.settimeout(1)
 
     def run(self):
         self.socket.bind((HOST, PORT))
         self.socket.listen()
-        while True:
+        while self.server.working:
             try:
                 client_socket, _ = self.socket.accept()
             except socket.timeout:
-                self.socket.close()
-                break
+                continue
             self.clients_queue.put(client_socket)
+        self.socket.close()
 
 
 class Worker(threading.Thread):
@@ -80,12 +84,11 @@ class Worker(threading.Thread):
         self.num_urls = 0
 
     def run(self):
-        while True:
+        while self.server.working:
             try:
-                client = self.clients_queue.get(timeout=5)
+                client = self.clients_queue.get(timeout=1)
             except queue.Empty:
-                self.server.started = False
-                break
+                continue
 
             url = client.recv(1024).decode()
 
@@ -113,7 +116,8 @@ class Worker(threading.Thread):
         )
         words = filter(
             lambda word: all(symb in ascii_lowercase for symb in word),
-            data)
+            data
+        )
         word_count = dict(Counter(words).most_common(top_k))
         return json.dumps(word_count, ensure_ascii=False)
 

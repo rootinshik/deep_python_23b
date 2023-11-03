@@ -2,7 +2,6 @@ import queue
 import threading
 import socket
 import sys
-
 from queue import Queue
 
 
@@ -16,8 +15,7 @@ class Client:
         self.file_name = file_name
         self.urls_queue = Queue()
         self.file_worker = FileWorker(self.file_name, self.urls_queue)
-        self.url_workers = [URLWorker(self.urls_queue)
-                            for _ in range(self.num_workers)]
+        self.url_workers = [URLWorker(self.urls_queue) for _ in range(self.num_workers)]
 
     def start(self):
         self.file_worker.start()
@@ -49,7 +47,7 @@ class URLWorker(threading.Thread):
     def run(self):
         while True:
             try:
-                url = self.urls_queue.get(timeout=2)
+                url = self.urls_queue.get(timeout=1)
             except queue.Empty:
                 break
 
@@ -58,7 +56,11 @@ class URLWorker(threading.Thread):
                 break
 
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
-                server.connect((HOST, PORT))
+                try:
+                    server.connect((HOST, PORT))
+                except ConnectionRefusedError:
+                    break
+
                 server.sendall(url.encode())
                 data = server.recv(1024).decode()
                 print(f"{url}: {data}")
