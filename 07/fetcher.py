@@ -1,18 +1,19 @@
 import asyncio
-import json
-import sys
-from collections import Counter
-from string import ascii_lowercase
-
 import aiohttp
-from bs4 import BeautifulSoup
+
+from utils import parse_data, parse_args
 
 
 class Fetcher:
-    def __init__(self, num_conn: int, path_to_urls: str):
+    def __init__(self,
+                 num_conn: int,
+                 path_to_urls: str,
+                 page_callback: callable = parse_data
+                 ):
         self.num_conn = num_conn
         self.path_to_urls = path_to_urls
         self.async_urls_queue = asyncio.Queue()
+        self.page_callback = page_callback
 
     async def batch_fetch(self) -> None:
         await self.url_from_file()
@@ -28,7 +29,7 @@ class Fetcher:
         while True:
             url = await self.async_urls_queue.get()
             try:
-                print(await Fetcher.fetch_url(url))
+                print(await self.fetch_url(url))
             finally:
                 self.async_urls_queue.task_done()
 
@@ -40,27 +41,10 @@ class Fetcher:
                 else:
                     await self.async_urls_queue.put(url.strip())
 
-    @staticmethod
-    async def fetch_url(url: str) -> str:
+    async def fetch_url(self, url: str) -> str:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
-                return Fetcher.parse_data(await resp.text())
-
-    @staticmethod
-    def parse_data(data: str, top_k: int = 5) -> str:
-        data = BeautifulSoup(data, "html.parser").get_text().lower().split()
-        words = filter(
-            lambda word: all(sym in ascii_lowercase for sym in word),
-            data
-        )
-        word_count = dict(Counter(words).most_common(top_k))
-        return json.dumps(word_count, ensure_ascii=False)
-
-
-def parse_args() -> tuple[int, str]:
-    if 3 <= len(sys.argv) <= 4:
-        return int(sys.argv[-2]), sys.argv[-1]
-    raise ValueError
+                return self.page_callback(await resp.text())
 
 
 async def main():
