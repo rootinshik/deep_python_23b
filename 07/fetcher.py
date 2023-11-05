@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 
 class Fetcher:
     def __init__(
-        self, num_conn: int, path_to_urls: str
+            self, num_conn: int, path_to_urls: str
     ):
         self.num_conn = num_conn
         self.path_to_urls = path_to_urls
@@ -19,7 +19,8 @@ class Fetcher:
     async def batch_fetch(self) -> None:
         await self.url_from_file()
         workers = [
-            asyncio.create_task(self.fetch_worker()) for _ in range(self.num_conn)
+            asyncio.create_task(self.fetch_worker())
+            for _ in range(self.num_conn)
         ]
         await self.async_urls_queue.join()
         for worker in workers:
@@ -49,8 +50,11 @@ class Fetcher:
 
     @staticmethod
     def parse_response(data: str, top_k: int = 5) -> str:
-        data = BeautifulSoup(data, "html.parser").get_text().lower().split()
-        words = filter(lambda word: all(sym in ascii_lowercase for sym in word), data)
+        data = BeautifulSoup(data, "html.parser"). \
+            get_text().lower().split()
+        words = filter(lambda word:
+                       all(sym in ascii_lowercase for sym in word),
+                       data)
         word_count = dict(Counter(words).most_common(top_k))
         return json.dumps(word_count, ensure_ascii=False)
 
