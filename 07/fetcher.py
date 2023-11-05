@@ -37,9 +37,9 @@ class Fetcher:
         with open(self.path_to_urls, "r", encoding="utf-8") as file:
             for num, url in enumerate(file.readlines(), start=1):
                 if num % self.num_conn != 0:
-                    self.async_urls_queue.put_nowait(url.strip())
+                    self.async_urls_queue.put_nowait(url)
                 else:
-                    await self.async_urls_queue.put(url.strip())
+                    await self.async_urls_queue.put(url)
 
     async def fetch_url(self, url: str) -> str:
         async with aiohttp.ClientSession() as session:
