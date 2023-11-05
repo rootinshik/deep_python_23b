@@ -6,24 +6,18 @@ from lru_cache import LRUCache
 class TestLruCache(unittest.TestCase):
     def test_cache_operations(self):
         cache = LRUCache()
-
         cache.set("key1", "value1")
         self.assertEqual(cache.get("key1"), "value1")
-
         cache.set("key2", 2)
         self.assertEqual(cache.get("key2"), 2)
-
         self.assertEqual(cache.get("key3"), None)
-
         cache.set("key2", 3)
         self.assertEqual(cache.get("key2"), 3)
-
         self.assertEqual(cache.get("key1"), "value1")
         self.assertEqual(cache.get("key3"), None)
 
     def test_cache_limit(self):
         cache = LRUCache(2)
-
         cache.set(1, 1)
         cache.set(2, 2)
         cache.set(3, 3)
@@ -34,7 +28,6 @@ class TestLruCache(unittest.TestCase):
 
     def test_cache_priority(self):
         cache = LRUCache(2)
-
         cache.set(1, 1)
         cache.set(2, 2)
         cache.get(1)
@@ -73,6 +66,14 @@ class TestLruCache(unittest.TestCase):
         self.assertEqual(None, cache.get(1))
         self.assertEqual(None, cache.get(2))
         self.assertEqual(3, cache.get(3))
+
+    def test_edit_value_by_key(self):
+        cache = LRUCache()
+        cache.set(1, 1)
+        self.assertEqual(1, cache.get(1))
+        cache.set(1, "val1")
+        self.assertNotEqual(1, cache.get(1))
+        self.assertEqual("val1", cache.get(1))
 
 
 if __name__ == "__main__":
