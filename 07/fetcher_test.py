@@ -14,7 +14,7 @@ class TestFetcher(unittest.IsolatedAsyncioTestCase):
     @patch("fetcher.print")
     async def test_fetch_all_urls(self, _, mock_get):
         mock_get.return_value.__aenter__.return_value.text.return_value\
-            = 'test content'
+            = "test content"
 
         fetcher = Fetcher(10, "/dev/null")
         await fetcher.batch_fetch()
@@ -30,7 +30,7 @@ class TestFetcher(unittest.IsolatedAsyncioTestCase):
     @patch("fetcher.print")
     async def test_num_tasks(self, _, mock_get):
         mock_get.return_value.__aenter__.return_value.text.return_value\
-            = 'test content'
+            = "test content"
 
         fetcher = Fetcher(10, "/dev/null")
         loop = asyncio.get_event_loop()
