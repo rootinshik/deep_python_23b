@@ -32,7 +32,7 @@ class Fetcher:
                 break
 
     @staticmethod
-    def url_from_file(path_to_urls) -> Generator[str, None, None]:
+    def url_from_file(path_to_urls: str) -> Generator[str, None, None]:
         with open(path_to_urls, "r", encoding="utf-8") as file:
             for url in file.readlines():
                 yield url.strip()
