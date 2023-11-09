@@ -3,44 +3,39 @@ import json
 import sys
 from collections import Counter
 from string import ascii_lowercase
+from typing import Generator, Coroutine
 
 import aiohttp
 from bs4 import BeautifulSoup
 
 
 class Fetcher:
-    def __init__(
-            self, num_conn: int, path_to_urls: str
-    ):
+    def __init__(self, num_conn: int, path_to_urls: str):
         self.num_conn = num_conn
         self.path_to_urls = path_to_urls
-        self.async_urls_queue = asyncio.Queue()
 
     async def batch_fetch(self) -> None:
-        await self.url_from_file()
+        url_from_file_gen = Fetcher.url_from_file(self.path_to_urls)
         workers = [
-            asyncio.create_task(self.fetch_worker())
+            asyncio.create_task(self.fetch_worker(url_from_file_gen))
             for _ in range(self.num_conn)
         ]
-        await self.async_urls_queue.join()
-        for worker in workers:
-            worker.cancel()
+        await asyncio.gather(*workers)
 
-    async def fetch_worker(self) -> None:
+    @staticmethod
+    async def fetch_worker(url_from_file_gen: Generator[str, None, None]
+                           ) -> Coroutine[None, None, None]:
         while True:
-            url = await self.async_urls_queue.get()
             try:
-                print(await self.fetch_url(url))
-            finally:
-                self.async_urls_queue.task_done()
+                print(await Fetcher.fetch_url(next(url_from_file_gen)))
+            except StopIteration:
+                break
 
-    async def url_from_file(self) -> None:
-        with open(self.path_to_urls, "r", encoding="utf-8") as file:
-            for num, url in enumerate(file.readlines(), start=1):
-                if num % self.num_conn != 0:
-                    self.async_urls_queue.put_nowait(url.strip())
-                else:
-                    await self.async_urls_queue.put(url.strip())
+    @staticmethod
+    def url_from_file(path_to_urls) -> Generator[str, None, None]:
+        with open(path_to_urls, "r", encoding="utf-8") as file:
+            for url in file.readlines():
+                yield url.strip()
 
     @staticmethod
     async def fetch_url(url: str) -> str:

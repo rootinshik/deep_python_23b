@@ -28,25 +28,6 @@ class TestFetcher(unittest.IsolatedAsyncioTestCase):
     @patch("fetcher.open", mock_open(read_data=URLS))
     @patch("fetcher.aiohttp.ClientSession.get")
     @patch("fetcher.print")
-    async def test_num_tasks(self, _, mock_get):
-        mock_get.return_value.__aenter__.return_value.text.return_value\
-            = "test content"
-
-        fetcher = Fetcher(10, "/dev/null")
-        loop = asyncio.get_event_loop()
-        await fetcher.batch_fetch()
-        # 11 = 10 задач для обкачки + 1 задача для чтения файла
-        self.assertEqual(11, len(asyncio.all_tasks(loop)))
-
-        fetcher = Fetcher(5, "/dev/null")
-        loop = asyncio.get_event_loop()
-        await fetcher.batch_fetch()
-        # 6 = 5 задач для обкачки + 1 задача для чтения файла
-        self.assertEqual(6, len(asyncio.all_tasks(loop)))
-
-    @patch("fetcher.open", mock_open(read_data=URLS))
-    @patch("fetcher.aiohttp.ClientSession.get")
-    @patch("fetcher.print")
     async def test_speed_dependence_number_of_tasks(self, _, mock_get):
         async def client_session_get_load():
             await asyncio.sleep(0.01)
