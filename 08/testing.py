@@ -3,7 +3,7 @@ from time import time
 
 from memory_profiler import profile
 
-from classes import *
+from classes import DefaultAttrs, SlotsAttrs, WeakrefAttr, Value
 
 
 N: int = 100_000
@@ -14,24 +14,24 @@ def comparison(attrs_class, val=Value(), n: int = N):
     start_time = time()
     insts = [attrs_class(val, val) for _ in range(n)]
     end_time = time()
-    mean_create_time = (end_time - start_time)
+    create_time = end_time - start_time
 
     start_time = time()
     for inst in insts:
-        a, b = inst.attr1, inst.attr2
+        inst.attr1, inst.attr2
     end_time = time()
-    mean_read_time = (end_time - start_time)
+    read_time = end_time - start_time
 
     start_time = time()
     for inst in insts:
         inst.attr1 = val
         inst.attr2 = val
     end_time = time()
-    mean_edit_time = (end_time - start_time)
+    edit_time = end_time - start_time
 
-    return f"{attrs_class.__name__} - {mean_create_time} " \
-           f" read - {mean_read_time}" \
-           f" write - {mean_edit_time}"
+    return f"{attrs_class.__name__} - {create_time} " \
+           f" read - {read_time}" \
+           f" write - {edit_time}"
 
 
 def main():
