@@ -11,50 +11,50 @@ class LRUCache(dict):
 
         self.logger = logging.getLogger(log_name)
         if not isinstance(limit, int) or limit <= 0:
-            self.logger.critical(f"LRUCache limit is not positive int, "
-                                 f"type: {type(limit)}, "
-                                 f"value: {limit}")
+            self.logger.critical("LRUCache limit is not positive int, "
+                                 "type: %s, "
+                                 "value: %s", type(limit), limit)
             raise AttributeError("Limit must be positive int")
         self.max_limit = limit
         self.limit = limit
 
     def get(self, key: Hashable) -> Any:
         if not isinstance(key, ab.Hashable):
-            self.logger.critical(f"Key is not hashable, "
-                                 f"type: {type(key)}")
+            self.logger.critical("Key is not hashable, "
+                                 "type: %s", type(key))
             raise AttributeError("Key must be hashable")
         if key not in self:
-            self.logger.info(f"Key not in LRUCache, "
-                             f"value: {key}")
+            self.logger.info("Key not in LRUCache, "
+                             "value: %s", key)
             return None
         val = self.pop(key)
         self[key] = val
-        self.logger.debug(f"Get key: {key} "
-                          f"with value: {val}")
+        self.logger.debug("Get key: %s "
+                          "with value: %s", key, val)
         return val
 
     def set(self, key: Hashable, value: Any) -> None:
         if not isinstance(key, ab.Hashable):
-            self.logger.critical(f"Key is not hashable, "
-                                 f"type: {type(key)}")
+            self.logger.critical("Key is not hashable, "
+                                 "type: %s", type(key))
             raise AttributeError("Key must be hashable")
         if key in self:
-            self.logger.info(f"Key was already in LRUCache, "
-                             f"value: {value}")
+            self.logger.info("Key was already in LRUCache, "
+                             "value: %s", value)
             self.pop(key)
         else:
             if self.limit > 0:
                 self.limit -= 1
-                self.logger.debug(f"Limit reached {self.limit}, "
-                                  f"max limit: {self.max_limit}")
+                self.logger.debug("Limit reached %s, "
+                                  "max limit: %s", self.limit, self.max_limit)
             else:
-                self.logger.debug(f"Max limit reached: {self.max_limit}")
+                self.logger.debug("Max limit reached: %s", self.max_limit)
                 pop_key = next(iter(self))
                 pop_val = self.pop(pop_key)
-                self.logger.debug(f"Remove key: {pop_key}, "
-                                  f"value: {pop_val}")
+                self.logger.debug("Remove key: %s, "
+                                  "value: %s", pop_key, pop_val)
         self[key] = value
-        self.logger.debug(f"Key set key: {key}, value: {value}")
+        self.logger.debug("Key set key: %s, value: %s", key, value)
 
 
 def custom_filter(record) -> bool:
@@ -80,7 +80,9 @@ def set_up_logger(in_stdout: bool, add_filter: bool) -> str:
     file_handler = logging.FileHandler("cache.log", mode="w")
     file_handler.setLevel(logging.INFO)
 
-    file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    file_formatter = logging.Formatter('%(asctime)s - '
+                                       '%(levelname)s - '
+                                       '%(message)s')
     file_handler.setFormatter(file_formatter)
 
     logger.addHandler(file_handler)
@@ -89,7 +91,8 @@ def set_up_logger(in_stdout: bool, add_filter: bool) -> str:
         stdout_handler = logging.StreamHandler(sys.stdout)
         stdout_handler.setLevel(logging.WARNING)
 
-        stdout_formatter = logging.Formatter('%(levelname)s - %(message)s')
+        stdout_formatter = logging.Formatter('%(levelname)s - '
+                                             '%(message)s')
         stdout_handler.setFormatter(stdout_formatter)
 
         logger.addHandler(stdout_handler)
@@ -101,10 +104,10 @@ def set_up_logger(in_stdout: bool, add_filter: bool) -> str:
 
 
 if __name__ == "__main__":
-    logger_name = set_up_logger(*arg_parse())
+    LOGGER_NAME = set_up_logger(*arg_parse())
 
     cache = LRUCache(limit=2,
-                     log_name=logger_name)
+                     log_name=LOGGER_NAME)
 
     cache.set("k1", "val1")
     cache.set("k2", "val2")
