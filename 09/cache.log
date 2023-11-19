@@ -1,0 +1,5 @@
+2023-11-19 23:46:35,509 - INFO - Key not in LRUCache, value: k3
+2023-11-19 23:46:35,509 - INFO - Key not in LRUCache, value: k2
+2023-11-19 23:46:35,509 - INFO - Key not in LRUCache, value: k4
+2023-11-19 23:46:35,510 - CRITICAL - Key is not hashable, type: <class 'list'>
+2023-11-19 23:46:35,510 - CRITICAL - Key is not hashable, type: <class 'dict'>
