@@ -13,8 +13,9 @@ def profile_deco(function: Callable):
     @functools.wraps(function)
     def inner(*args, **kwargs):
         pr.enable()
-        function(*args, **kwargs)
+        result = function(*args, **kwargs)
         pr.disable()
+        return result
 
     def print_stat():
         s = io.StringIO()
