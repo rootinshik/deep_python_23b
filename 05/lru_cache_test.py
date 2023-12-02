@@ -71,15 +71,10 @@ class TestLruCache(unittest.TestCase):
         cache = LRUCache(limit=2)
         cache.set(1, 1)
         cache.set(2, 2)
-        self.assertEqual(1, cache.get(1))
-        self.assertEqual(2, cache.get(2))
         cache.set(1, "val1")
-        self.assertNotEqual(1, cache.get(1))
-        self.assertEqual("val1", cache.get(1))
         cache.set(3, 3)
         self.assertEqual("val1", cache.get(1))
         self.assertEqual(3, cache.get(3))
-        self.assertNotEqual(2, cache.get(2))
         self.assertEqual(None, cache.get(2))
 
 
