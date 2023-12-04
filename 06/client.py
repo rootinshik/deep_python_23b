@@ -1,4 +1,3 @@
-import queue
 import threading
 import socket
 import sys
@@ -13,9 +12,10 @@ class Client:
     def __init__(self, num_workers: int, file_name: str):
         self.num_workers = num_workers
         self.file_name = file_name
-        self.urls_queue = Queue()
+        self.urls_queue = Queue(maxsize=self.num_workers)
         self.file_worker = FileWorker(self.file_name, self.urls_queue)
-        self.url_workers = [URLWorker(self.urls_queue) for _ in range(self.num_workers)]
+        self.url_workers = [URLWorker(self.urls_queue)
+                            for _ in range(self.num_workers)]
 
     def start(self):
         self.file_worker.start()
@@ -34,7 +34,7 @@ class FileWorker(threading.Thread):
 
     def run(self):
         with open(self.file_name, encoding="utf-8") as file:
-            for line in file.readlines():
+            for line in file:
                 self.urls_queue.put(line.strip())
         self.urls_queue.put(None)
 
@@ -46,10 +46,7 @@ class URLWorker(threading.Thread):
 
     def run(self):
         while True:
-            try:
-                url = self.urls_queue.get(timeout=1)
-            except queue.Empty:
-                break
+            url = self.urls_queue.get()
 
             if url is None:
                 self.urls_queue.put(None)
@@ -58,12 +55,11 @@ class URLWorker(threading.Thread):
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
                 try:
                     server.connect((HOST, PORT))
+                    server.sendall(url.encode())
+                    data = server.recv(1024).decode()
+                    print(f"{url}: {data}")
                 except ConnectionRefusedError:
-                    break
-
-                server.sendall(url.encode())
-                data = server.recv(1024).decode()
-                print(f"{url}: {data}")
+                    continue
 
 
 def parse_args():

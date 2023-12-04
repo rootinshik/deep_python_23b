@@ -21,8 +21,12 @@ class Server:
         self.k_freq_words = k_freq_words
         self.num_processed_urls = 0
         self.clients_queue = Queue()
+        self.worker_lock = threading.Lock()
         self.workers = [
-            Worker(self.clients_queue, self.k_freq_words, self)
+            Worker(self.worker_lock,
+                   self.clients_queue,
+                   self.k_freq_words,
+                   self)
             for _ in range(self.num_workers)
         ]
         self.master = Master(self.clients_queue, self)
@@ -74,13 +78,18 @@ class Master(threading.Thread):
 
 class Worker(threading.Thread):
     def __init__(
-        self, clients_queue: Queue, top_k: int, server: Server, *args, **kwargs
+        self,
+        lock: threading.Lock,
+        clients_queue: Queue,
+        top_k: int,
+        server: Server,
+        *args, **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.clients_queue = clients_queue
         self.top_k = top_k
         self.server = server
-        self.lock = threading.Lock()
+        self.lock = lock
         self.num_urls = 0
 
     def run(self):
@@ -90,16 +99,18 @@ class Worker(threading.Thread):
             except queue.Empty:
                 continue
 
-            url = client.recv(1024).decode()
+            try:
+                url = client.recv(1024).decode()
+                client.sendall(self.parse_data(url, self.top_k).encode())
+                client.close()
 
-            client.sendall(self.parse_data(url, self.top_k).encode())
-            client.close()
+                self.num_urls += 1
+                with self.lock:
+                    self.server.num_processed_urls += 1
+                print(self.server)
 
-            self.num_urls += 1
-            with self.lock:
-                self.server.num_processed_urls += 1
-
-            print(self.server)
+            except ConnectionRefusedError:
+                continue
 
     @staticmethod
     def get_data(url: str) -> str:
