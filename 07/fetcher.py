@@ -3,7 +3,7 @@ import json
 import sys
 from collections import Counter
 from string import ascii_lowercase
-from typing import Generator, Coroutine
+from typing import Generator, Iterator
 
 import aiohttp
 from bs4 import BeautifulSoup
@@ -23,8 +23,7 @@ class Fetcher:
         await asyncio.gather(*workers)
 
     @staticmethod
-    async def fetch_worker(url_from_file_gen: Generator[str, None, None]
-                           ) -> Coroutine[None, None, None]:
+    async def fetch_worker(url_from_file_gen: Iterator | Generator) -> None:
         while True:
             try:
                 print(await Fetcher.fetch_url(next(url_from_file_gen)))
