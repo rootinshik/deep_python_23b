@@ -10,3 +10,5 @@
 09. [Логирование](09)
 10. Расширения на C
 11. [Экзамен](exam)
+
+Подробнее про программу: https://education.vk.company/program/deep-python
